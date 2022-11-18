@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.backend.entity.Course;
-import com.example.backend.entity.Student;
 import com.example.backend.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +55,7 @@ public class CourseController {
                                    @RequestParam Integer pageSize,
                                    @RequestParam(required = false, defaultValue = "") String id,
                                    @RequestParam(required = false, defaultValue = "") String name,
-                                   @RequestParam(required = false, defaultValue = "") String by){
+                                   @RequestParam(required = false, defaultValue = "") String taught){
         final String cmp = "";
 
         IPage<Course> page = new Page<>(pageNum, pageSize);
@@ -69,8 +68,8 @@ public class CourseController {
         if( !cmp.equals(name) ){
             wrapper.like("name",name);
         }
-        if( !cmp.equals(by) ){
-            wrapper.like("by",by);
+        if( !cmp.equals(taught) ){
+            wrapper.like("taught",taught);
         }
 
         return courseService.page(page, wrapper);
