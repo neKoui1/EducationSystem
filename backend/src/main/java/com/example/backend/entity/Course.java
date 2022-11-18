@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @TableName("courses")
 public class Course {
 
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
+    @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private String id;
 
     @TableField("name")
@@ -23,6 +23,6 @@ public class Course {
     @TableField("credit")
     private Integer credit;
 
-    @TableField("by")
-    private String by;
+    @TableField("taught")
+    private String taught;
 }

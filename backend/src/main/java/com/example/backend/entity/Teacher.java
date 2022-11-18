@@ -17,7 +17,7 @@ import java.util.List;
 @TableName("teachers")
 public class Teacher {
 
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
+    @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private String id;
 
     @TableField("name")
