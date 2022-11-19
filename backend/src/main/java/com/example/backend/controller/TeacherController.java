@@ -1,13 +1,15 @@
 package com.example.backend.controller;
 
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.backend.entity.Student;
+import com.example.backend.common.Constants;
+import com.example.backend.common.Result;
 import com.example.backend.entity.Teacher;
 import com.example.backend.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,18 @@ public class TeacherController {
 
     @Autowired
     private TeacherService teacherService;
+
+    @PostMapping("/login")
+    @ResponseBody
+    public Result login(@RequestBody Teacher teacher){
+        String id = teacher.getId();
+        String password = teacher.getPassword();
+        if (StrUtil.isBlank(id) || StrUtil.isBlank(password)){
+            return Result.error(Constants.CODE_400, "用户名或密码错误");
+        }
+        Teacher dto = teacherService.login(teacher);
+        return Result.success(dto);
+    }
 
     @GetMapping("/list")
     @ResponseBody

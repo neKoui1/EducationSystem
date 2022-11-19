@@ -1,12 +1,15 @@
 package com.example.backend.controller;
 
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.backend.common.Constants;
+import com.example.backend.common.Result;
 import com.example.backend.entity.Admin;
 import com.example.backend.entity.Student;
 import com.example.backend.service.AdminService;
@@ -26,6 +29,18 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+
+    @PostMapping("/login")
+    @ResponseBody
+    public Result login(@RequestBody Admin admin){
+        String id = admin.getId();
+        String password = admin.getPassword();
+        if (StrUtil.isBlank(id) || StrUtil.isBlank(password)){
+            return Result.error(Constants.CODE_400, "用户名或密码错误");
+        }
+        Admin dto = adminService.login(admin);
+        return Result.success(dto);
+    }
 
     @GetMapping("/list")
     @ResponseBody
