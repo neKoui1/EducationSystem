@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @TableName("admins")
 public class Admin {
 
-    @TableId(value = "id", type = IdType.ASSIGN_UUID)
-    private String id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
 
     @TableField("name")
     private String name;

@@ -8,21 +8,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@TableName("sc")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("courses")
-public class Course {
+public class SC {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    @TableField("name")
-    private String name;
+    @TableField("student_id")
+    private Integer student_id;
 
-    @TableField("credit")
-    private Integer credit;
-
-    @TableField("taught")
-    private String taught;
+    @TableField("course_id")
+    private Integer course_id;
 }

@@ -11,18 +11,15 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("courses")
-public class Course {
+@TableName("tc")
+public class TC {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    @TableField("name")
-    private String name;
+    @TableField("teacher_id")
+    private Integer teacher_id;
 
-    @TableField("credit")
-    private Integer credit;
-
-    @TableField("taught")
-    private String taught;
+    @TableField("course_id")
+    private Integer course_id;
 }

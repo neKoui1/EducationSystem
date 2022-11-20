@@ -53,7 +53,6 @@ public class CourseController {
     @ResponseBody
     public IPage<Course> findPage(@RequestParam Integer pageNum,
                                    @RequestParam Integer pageSize,
-                                   @RequestParam(required = false, defaultValue = "") String id,
                                    @RequestParam(required = false, defaultValue = "") String name,
                                    @RequestParam(required = false, defaultValue = "") String taught){
         final String cmp = "";
@@ -62,9 +61,6 @@ public class CourseController {
 
         QueryWrapper<Course> wrapper = new QueryWrapper<>();
 
-        if( !cmp.equals(id) ){
-            wrapper.like("id", id);
-        }
         if( !cmp.equals(name) ){
             wrapper.like("name",name);
         }
