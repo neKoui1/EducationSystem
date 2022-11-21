@@ -47,33 +47,33 @@ public class AdminController {
 
     @GetMapping("/list")
     @ResponseBody
-    public List<Admin> list(){
-        return adminService.list();
+    public Result list(){
+        return Result.success(adminService.list());
     }
 
     @PostMapping("/save")
     @ResponseBody
-    public boolean save(@RequestBody Admin admin){
-        return adminService.saveOrUpdate(admin);
+    public Result save(@RequestBody Admin admin){
+        return Result.success(adminService.saveOrUpdate(admin));
     }
 
     @DeleteMapping("/del/{id}")
     @ResponseBody
-    public boolean removeById(@PathVariable Integer id){
-        return adminService.removeById(id);
+    public Result removeById(@PathVariable Integer id){
+        return Result.success(adminService.removeById(id));
     }
 
     @PostMapping("/del/batch")
     @ResponseBody
-    public boolean removeByIds(@RequestBody List<Integer> ids){
-        return adminService.removeByIds(ids);
+    public Result removeByIds(@RequestBody List<Integer> ids){
+        return Result.success(adminService.removeByIds(ids));
     }
 
     @GetMapping("/page")
     @ResponseBody
-    public IPage<Admin> findPage(@RequestParam Integer pageNum,
-                                   @RequestParam Integer pageSize,
-                                   @RequestParam(required = false, defaultValue = "") String name){
+    public Result findPage(@RequestParam Integer pageNum,
+                           @RequestParam Integer pageSize,
+                           @RequestParam(required = false, defaultValue = "") String name){
         final String cmp = "";
 
         IPage<Admin> page = new Page<>(pageNum, pageSize);
@@ -84,7 +84,7 @@ public class AdminController {
             wrapper.like("name",name);
         }
 
-        return adminService.page(page, wrapper);
+        return Result.success(adminService.page(page, wrapper));
     }
 
     @GetMapping("/export")
