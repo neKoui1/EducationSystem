@@ -36,9 +36,12 @@ public class AdminController {
         Integer id = admin.getId();
         String password = admin.getPassword();
         if (StrUtil.isBlank(id.toString()) || StrUtil.isBlank(password)){
-            return Result.error(Constants.CODE_400, "用户名或密码错误");
+            return Result.error(Constants.CODE_400, "用户名或密码错误！");
         }
         Admin dto = adminService.login(admin);
+        if (dto == null){
+            return Result.error(Constants.CODE_400, "用户名或密码错误！");
+        }
         return Result.success(dto);
     }
 

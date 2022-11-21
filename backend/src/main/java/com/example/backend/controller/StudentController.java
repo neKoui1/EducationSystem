@@ -11,8 +11,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.backend.common.Constants;
 import com.example.backend.common.Result;
 import com.example.backend.entity.Course;
+import com.example.backend.entity.SC;
 import com.example.backend.entity.Student;
 import com.example.backend.service.CourseService;
+import com.example.backend.service.SCService;
 import com.example.backend.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,33 +36,55 @@ public class StudentController {
     @Autowired
     private CourseService courseService;
 
+    @Autowired
+    private SCService scService;
+
     @PostMapping("/login")
     @ResponseBody
     public Result login (@RequestBody Student student){
         Integer id = student.getId();
         String password = student.getPassword();
         if (StrUtil.isBlank(id.toString()) || StrUtil.isBlank(password)){
-            return Result.error(Constants.CODE_400, "用户名或密码错误");
+            return Result.error(Constants.CODE_400, "用户名或密码错误！");
         }
         Student dto = studentService.login(student);
+        if (dto == null) {
+            return Result.error(Constants.CODE_400, "用户名或密码错误！");
+        }
         return Result.success(dto);
     }
 
     @GetMapping("/getCourses")
     @ResponseBody
-    public Result getCourses(@RequestBody Student student){
-        Integer student_id = student.getId();
+    public Result getCourses(@RequestParam Integer student_id){
         List<Course> courseList = courseService.findCourses(student_id);
         return Result.success(courseList);
     }
 
-//    @PostMapping("/chooseCourse")
-//    @ResponseBody
-//    public Result chooseCourse(@RequestBody Student student, @RequestBody Course course){
-//        if ( student == null || course == null){
-//            return Result.error(Constants.CODE_400, "用户或课程号为空！");
-//        }
-//    }
+    @PostMapping("/chooseCourse")
+    @ResponseBody
+    public Result chooseCourse(@RequestParam Integer student_id, @RequestParam Integer course_id){
+        SC one = scService.find(student_id, course_id);
+        if (one != null){
+            return Result.error(Constants.CODE_600, "已选择当前课程！");
+        } else {
+            SC sc = new SC();
+            sc.setCourse_id(course_id);
+            sc.setStudent_id(student_id);
+            return Result.success(scService.save(sc));
+        }
+    }
+
+    @PostMapping("/cancelCourse")
+    @ResponseBody
+    public Result cancelCourse(@RequestParam Integer student_id, @RequestParam Integer course_id){
+        SC one = scService.find(student_id, course_id);
+        if (one == null){
+            return Result.error(Constants.CODE_400, "未选择当前课程， 无法取消选课！");
+        } else {
+            return Result.success(scService.removeById(one));
+        }
+    }
 
     @GetMapping("/list")
     @ResponseBody

@@ -18,4 +18,11 @@ public class SCService extends ServiceImpl<SCMapper, SC> {
     public List<Integer> findCourseIds(Integer student_id){
         return scMapper.findCourseIds(student_id);
     }
+
+    public SC find(Integer student_id, Integer course_id) {
+        QueryWrapper<SC> wrapper = new QueryWrapper<>();
+        wrapper.eq("student_id", student_id);
+        wrapper.eq("course_id", course_id);
+        return getOne(wrapper);
+    }
 }

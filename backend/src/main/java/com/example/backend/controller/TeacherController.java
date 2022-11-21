@@ -40,9 +40,12 @@ public class TeacherController {
         Integer id = teacher.getId();
         String password = teacher.getPassword();
         if (StrUtil.isBlank(id.toString()) || StrUtil.isBlank(password)){
-            return Result.error(Constants.CODE_400, "用户名或密码错误");
+            return Result.error(Constants.CODE_400, "用户名或密码错误！");
         }
         Teacher dto = teacherService.login(teacher);
+        if (dto == null) {
+            return Result.error(Constants.CODE_400, "用户名或密码错误！");
+        }
         return Result.success(dto);
     }
 
