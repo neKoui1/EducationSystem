@@ -33,12 +33,15 @@ public class AdminController {
     @PostMapping("/login")
     @ResponseBody
     public Result login(@RequestBody Admin admin){
-        String id = admin.getId();
+        Integer id = admin.getId();
         String password = admin.getPassword();
-        if (StrUtil.isBlank(id) || StrUtil.isBlank(password)){
-            return Result.error(Constants.CODE_400, "用户名或密码错误");
+        if (StrUtil.isBlank(id.toString()) || StrUtil.isBlank(password)){
+            return Result.error(Constants.CODE_400, "用户名或密码错误！");
         }
         Admin dto = adminService.login(admin);
+        if (dto == null){
+            return Result.error(Constants.CODE_400, "用户名或密码错误！");
+        }
         return Result.success(dto);
     }
 
@@ -56,13 +59,13 @@ public class AdminController {
 
     @DeleteMapping("/del/{id}")
     @ResponseBody
-    public boolean removeById(@PathVariable String id){
+    public boolean removeById(@PathVariable Integer id){
         return adminService.removeById(id);
     }
 
     @PostMapping("/del/batch")
     @ResponseBody
-    public boolean removeByIds(@RequestBody List<String> ids){
+    public boolean removeByIds(@RequestBody List<Integer> ids){
         return adminService.removeByIds(ids);
     }
 
@@ -70,7 +73,6 @@ public class AdminController {
     @ResponseBody
     public IPage<Admin> findPage(@RequestParam Integer pageNum,
                                    @RequestParam Integer pageSize,
-                                   @RequestParam(required = false, defaultValue = "") String id,
                                    @RequestParam(required = false, defaultValue = "") String name){
         final String cmp = "";
 
@@ -78,9 +80,6 @@ public class AdminController {
 
         QueryWrapper<Admin> wrapper = new QueryWrapper<>();
 
-        if( !cmp.equals(id) ){
-            wrapper.like("id", id);
-        }
         if( !cmp.equals(name) ){
             wrapper.like("name",name);
         }

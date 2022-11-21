@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
@@ -9,7 +10,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.backend.common.Constants;
 import com.example.backend.common.Result;
+import com.example.backend.entity.Course;
+import com.example.backend.entity.SC;
 import com.example.backend.entity.Student;
+import com.example.backend.service.CourseService;
+import com.example.backend.service.SCService;
 import com.example.backend.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,16 +33,57 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
+    @Autowired
+    private CourseService courseService;
+
+    @Autowired
+    private SCService scService;
+
     @PostMapping("/login")
     @ResponseBody
     public Result login (@RequestBody Student student){
-        String id = student.getId();
+        Integer id = student.getId();
         String password = student.getPassword();
-        if (StrUtil.isBlank(id) || StrUtil.isBlank(password)){
-            return Result.error(Constants.CODE_400, "用户名或密码错误");
+        if (StrUtil.isBlank(id.toString()) || StrUtil.isBlank(password)){
+            return Result.error(Constants.CODE_400, "用户名或密码错误！");
         }
         Student dto = studentService.login(student);
+        if (dto == null) {
+            return Result.error(Constants.CODE_400, "用户名或密码错误！");
+        }
         return Result.success(dto);
+    }
+
+    @GetMapping("/getCourses")
+    @ResponseBody
+    public Result getCourses(@RequestParam Integer student_id){
+        List<Course> courseList = courseService.findCourses(student_id);
+        return Result.success(courseList);
+    }
+
+    @PostMapping("/chooseCourse")
+    @ResponseBody
+    public Result chooseCourse(@RequestParam Integer student_id, @RequestParam Integer course_id){
+        SC one = scService.find(student_id, course_id);
+        if (one != null){
+            return Result.error(Constants.CODE_600, "已选择当前课程！");
+        } else {
+            SC sc = new SC();
+            sc.setCourse_id(course_id);
+            sc.setStudent_id(student_id);
+            return Result.success(scService.save(sc));
+        }
+    }
+
+    @PostMapping("/cancelCourse")
+    @ResponseBody
+    public Result cancelCourse(@RequestParam Integer student_id, @RequestParam Integer course_id){
+        SC one = scService.find(student_id, course_id);
+        if (one == null){
+            return Result.error(Constants.CODE_400, "未选择当前课程， 无法取消选课！");
+        } else {
+            return Result.success(scService.removeById(one));
+        }
     }
 
     @GetMapping("/list")
@@ -54,13 +100,13 @@ public class StudentController {
 
     @DeleteMapping("/del/{id}")
     @ResponseBody
-    public boolean removeById(@PathVariable String id){
+    public boolean removeById(@PathVariable Integer id){
         return studentService.removeById(id);
     }
 
     @PostMapping("/del/batch")
     @ResponseBody
-    public boolean removeByIds(@RequestBody List<String> ids){
+    public boolean removeByIds(@RequestBody List<Integer> ids){
         return studentService.removeByIds(ids);
     }
 
@@ -68,7 +114,6 @@ public class StudentController {
     @ResponseBody
     public IPage<Student> findPage(@RequestParam Integer pageNum,
                                    @RequestParam Integer pageSize,
-                                   @RequestParam(required = false, defaultValue = "") String id,
                                    @RequestParam(required = false, defaultValue = "") String name){
         final String cmp = "";
 
@@ -76,9 +121,6 @@ public class StudentController {
 
         QueryWrapper<Student> wrapper = new QueryWrapper<>();
 
-        if( !cmp.equals(id) ){
-            wrapper.like("id", id);
-        }
         if( !cmp.equals(name) ){
             wrapper.like("name",name);
         }

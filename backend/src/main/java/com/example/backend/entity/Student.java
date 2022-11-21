@@ -17,8 +17,8 @@ import java.util.List;
 @TableName("students")
 public class Student {
 
-    @TableId(value = "id", type = IdType.ASSIGN_UUID)
-    private String id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
 
     @TableField("name")
     private String name;
@@ -35,7 +35,5 @@ public class Student {
     @TableField("dept")
     private String dept;
 
-    @TableField("courses")
-    private List<Course> courses;
 
 }

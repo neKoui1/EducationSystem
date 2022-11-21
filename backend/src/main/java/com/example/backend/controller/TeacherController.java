@@ -10,7 +10,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.backend.common.Constants;
 import com.example.backend.common.Result;
+import com.example.backend.entity.Course;
 import com.example.backend.entity.Teacher;
+import com.example.backend.service.CourseService;
 import com.example.backend.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,16 +31,30 @@ public class TeacherController {
     @Autowired
     private TeacherService teacherService;
 
+    @Autowired
+    private CourseService courseService;
+
     @PostMapping("/login")
     @ResponseBody
     public Result login(@RequestBody Teacher teacher){
-        String id = teacher.getId();
+        Integer id = teacher.getId();
         String password = teacher.getPassword();
-        if (StrUtil.isBlank(id) || StrUtil.isBlank(password)){
-            return Result.error(Constants.CODE_400, "用户名或密码错误");
+        if (StrUtil.isBlank(id.toString()) || StrUtil.isBlank(password)){
+            return Result.error(Constants.CODE_400, "用户名或密码错误！");
         }
         Teacher dto = teacherService.login(teacher);
+        if (dto == null) {
+            return Result.error(Constants.CODE_400, "用户名或密码错误！");
+        }
         return Result.success(dto);
+    }
+
+    @GetMapping("/getCourses")
+    @ResponseBody
+    public Result getCourses(@RequestBody Teacher teacher){
+        Integer id = teacher.getId();
+        List<Course>courseList = courseService.findTeacherCourses(id);
+        return Result.success(courseList);
     }
 
     @GetMapping("/list")
@@ -55,13 +71,13 @@ public class TeacherController {
 
     @DeleteMapping("/del/{id}")
     @ResponseBody
-    public boolean removeById(@PathVariable String id){
+    public boolean removeById(@PathVariable Integer id){
         return teacherService.removeById(id);
     }
 
     @PostMapping("/del/batch")
     @ResponseBody
-    public boolean removeByIds(@RequestBody List<String> ids){
+    public boolean removeByIds(@RequestBody List<Integer> ids){
         return teacherService.removeByIds(ids);
     }
 
@@ -69,7 +85,6 @@ public class TeacherController {
     @ResponseBody
     public IPage<Teacher> findPage(@RequestParam Integer pageNum,
                                    @RequestParam Integer pageSize,
-                                   @RequestParam(required = false, defaultValue = "") String id,
                                    @RequestParam(required = false, defaultValue = "") String name){
         final String cmp = "";
 
@@ -77,9 +92,6 @@ public class TeacherController {
 
         QueryWrapper<Teacher> wrapper = new QueryWrapper<>();
 
-        if( !cmp.equals(id) ){
-            wrapper.like("id", id);
-        }
         if( !cmp.equals(name) ){
             wrapper.like("name",name);
         }
