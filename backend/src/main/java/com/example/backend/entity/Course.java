@@ -23,6 +23,21 @@ public class Course {
     @TableField("credit")
     private Integer credit;
 
+    @TableField("day")
+    private String day;
+
+    @TableField("time")
+    private String time;
+
+    @TableField("location")
+    private String location;
+
+    @TableField("choose")
+    private Integer choose;
+
+    @TableField("capacity")
+    private Integer capacity;
+
     @TableField("taught")
     private String taught;
 }
