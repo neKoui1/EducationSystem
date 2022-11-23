@@ -4,7 +4,7 @@ public interface Constants {
 
     String CODE_200 = "200"; // success
 
-    String CODE__500 = "500"; // 系统错误
+    String CODE_500 = "500"; // 系统错误
 
     String CODE_400 = "400"; // 参数不足
 

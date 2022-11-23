@@ -41,7 +41,12 @@ public class CourseController {
     @Autowired
     private TCMapper tcMapper;
     @Autowired
+    private TCService tcService;
+    @Autowired
     private TeacherMapper teacherMapper;
+
+    @Autowired
+    private TeacherService teacherService;
 
     @GetMapping("/list")
     @ResponseBody
@@ -53,8 +58,13 @@ public class CourseController {
             wrapperSC.eq("course_id", id);
             list.get(i).setChoose(scMapper.selectCount(wrapperSC).intValue());
 
-
-
+            Integer teacher_id = tcMapper.findTeacherId(id);
+            if (teacher_id == null){
+                list.get(i).setTaught(null);
+                continue;
+            } else{
+                list.get(i).setTaught(teacherService.getById(teacher_id).getName());
+            }
 
             courseService.saveOrUpdate(list.get(i));
         }
@@ -74,11 +84,11 @@ public class CourseController {
         }
         if (!day.equals("周一") && !day.equals("周二") && !day.equals("周三") &&
                 !day.equals("周四") && !day.equals("周五") && !day.equals("周六") && !day.equals("周日")) {
-            return Result.error(Constants.CODE_400, "参数错误：课程时间格式必须为周一-周日！");
+            return Result.error(Constants.CODE_400, "参数错误：课程时间格式必须为周一~周日！");
         }
         if (!time.equals("1") && !time.equals("2") && !time.equals("3") &&
-                !time.equals("4") && !time.equals("5") && !time.equals("6") && !time.equals("7") && !time.equals("8")) {
-            return Result.error(Constants.CODE_400, "参数错误: 课程时间格式必须为1-8！");
+                !time.equals("4") && !time.equals("5")) {
+            return Result.error(Constants.CODE_400, "参数错误: 课程时间格式必须为1~5！");
         }
         return Result.success(courseService.saveOrUpdate(course));
     }

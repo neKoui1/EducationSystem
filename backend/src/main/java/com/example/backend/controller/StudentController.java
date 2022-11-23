@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/student")
@@ -68,6 +69,15 @@ public class StudentController {
         if (one != null){
             return Result.error(Constants.CODE_600, "已选择当前课程！");
         } else {
+            Course c = courseService.getById(course_id);
+            String DAY = c.getDay();
+            String TIME = c.getTime();
+            List<Course> courseList = courseService.findCourses(student_id);
+            for (Course course : courseList) {
+                if (Objects.equals(DAY, course.getDay()) && Objects.equals(TIME, course.getTime())) {
+                    return Result.error(Constants.CODE_600, "当前时间内存在选课冲突！");
+                }
+            }
             SC sc = new SC();
             sc.setCourse_id(course_id);
             sc.setStudent_id(student_id);

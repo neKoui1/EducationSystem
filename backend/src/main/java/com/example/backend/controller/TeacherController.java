@@ -11,8 +11,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.backend.common.Constants;
 import com.example.backend.common.Result;
 import com.example.backend.entity.Course;
+import com.example.backend.entity.TC;
 import com.example.backend.entity.Teacher;
 import com.example.backend.service.CourseService;
+import com.example.backend.service.TCService;
 import com.example.backend.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/teacher")
@@ -33,6 +36,9 @@ public class TeacherController {
 
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private TCService tcService;
 
     @PostMapping("/login")
     @ResponseBody
@@ -55,6 +61,46 @@ public class TeacherController {
         Integer id = teacher.getId();
         List<Course>courseList = courseService.findTeacherCourses(id);
         return Result.success(courseList);
+    }
+
+    @PostMapping("/chooseCourse")
+    @ResponseBody
+    public Result chooseCourse(@RequestParam Integer teacher_id, @RequestParam Integer course_id){
+        QueryWrapper<TC> wrapper = new QueryWrapper<>();
+        wrapper.eq("course_id", course_id);
+        TC preExam = tcService.getOne(wrapper);
+        if (preExam!=null){
+            return Result.error(Constants.CODE_600, "当前课程已有教师执教！");
+        }
+        TC one = tcService.find(teacher_id, course_id);
+        if (one != null){
+            return Result.error(Constants.CODE_600, "已安排当前教师执教！");
+        } else{
+            Course c = courseService.getById(course_id);
+            String DAY = c.getDay();
+            String TIME = c.getTime();
+            List<Course> courseList = courseService.findTeacherCourses(teacher_id);
+            for(Course course : courseList){
+                if (Objects.equals(DAY, course.getDay()) && Objects.equals(TIME, course.getTime())){
+                    return Result.error(Constants.CODE_600, "当前时间内存在选课冲突！");
+                }
+            }
+            TC tc = new TC();
+            tc.setTeacher_id(teacher_id);
+            tc.setCourse_id(course_id);
+            return Result.success(tcService.save(tc));
+        }
+    }
+
+    @PostMapping("/cancelCourse")
+    @ResponseBody
+    public Result cancelCourse(@RequestParam Integer teacher_id, @RequestParam Integer course_id){
+        TC one = tcService.find(teacher_id, course_id);
+        if (one == null){
+            return Result.error(Constants.CODE_400, "未安排当前教师执教该课程， 无法取消安排！");
+        } else{
+            return Result.success(tcService.removeById(one));
+        }
     }
 
     @GetMapping("/list")
