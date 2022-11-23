@@ -1,6 +1,5 @@
 package com.example.backend.controller;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
@@ -72,6 +71,11 @@ public class StudentController {
             Course c = courseService.getById(course_id);
             String DAY = c.getDay();
             String TIME = c.getTime();
+            Integer CAP = c.getCapacity();
+            Integer CHOOSE = c.getChoose();
+            if (Objects.equals(CHOOSE, CAP)){
+                return Result.error(Constants.CODE_600, "当前课程选课人数已满！");
+            }
             List<Course> courseList = courseService.findCourses(student_id);
             for (Course course : courseList) {
                 if (Objects.equals(DAY, course.getDay()) && Objects.equals(TIME, course.getTime())) {
@@ -104,8 +108,23 @@ public class StudentController {
 
     @PostMapping("/save")
     @ResponseBody
-    public boolean save(@RequestBody Student student){
-        return studentService.saveOrUpdate(student);
+    public Result save(@RequestBody Student student){
+        String name = student.getName();
+        String password = student.getPassword();
+        String age = student.getAge();
+        String sex = student.getSex();
+        if (StrUtil.isBlank(name) || StrUtil.isBlank(password)){
+            return Result.error(Constants.CODE_400, "用户名或密码不能为空！");
+        }
+        try {
+            Integer temp = Integer.parseInt(age);
+        } catch (Exception e){
+            return Result.error(Constants.CODE_400,"请输入正确的年龄！");
+        }
+        if (!StrUtil.equals(sex, "男") && !StrUtil.equals(sex, "女")){
+            return Result.error(Constants.CODE_400, "请输入正确的性别！");
+        }
+        return Result.success(studentService.saveOrUpdate(student));
     }
 
     @DeleteMapping("/del/{id}")
@@ -124,7 +143,10 @@ public class StudentController {
     @ResponseBody
     public IPage<Student> findPage(@RequestParam Integer pageNum,
                                    @RequestParam Integer pageSize,
-                                   @RequestParam(required = false, defaultValue = "") String name){
+                                   @RequestParam(required = false, defaultValue = "") String name,
+                                   @RequestParam(required = false, defaultValue = "") String age,
+                                   @RequestParam(required = false, defaultValue = "") String sex,
+                                   @RequestParam(required = false, defaultValue = "") String dept){
         final String cmp = "";
 
         IPage<Student> page = new Page<>(pageNum, pageSize);
@@ -133,6 +155,15 @@ public class StudentController {
 
         if( !cmp.equals(name) ){
             wrapper.like("name",name);
+        }
+        if( !cmp.equals(age) ){
+            wrapper.like("age",age);
+        }
+        if( !cmp.equals(sex) ){
+            wrapper.like("sex",sex);
+        }
+        if( !cmp.equals(dept) ){
+            wrapper.like("dept",dept);
         }
 
         return studentService.page(page, wrapper);
