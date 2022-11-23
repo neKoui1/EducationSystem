@@ -69,6 +69,7 @@ public class TeacherController {
         QueryWrapper<TC> wrapper = new QueryWrapper<>();
         wrapper.eq("course_id", course_id);
         TC preExam = tcService.getOne(wrapper);
+
         if (preExam!=null){
             return Result.error(Constants.CODE_600, "当前课程已有教师执教！");
         }
@@ -80,11 +81,15 @@ public class TeacherController {
             String DAY = c.getDay();
             String TIME = c.getTime();
             List<Course> courseList = courseService.findTeacherCourses(teacher_id);
-            for(Course course : courseList){
-                if (Objects.equals(DAY, course.getDay()) && Objects.equals(TIME, course.getTime())){
-                    return Result.error(Constants.CODE_600, "当前时间内存在选课冲突！");
+            if (courseList != null){
+                for (Course course : courseList) {
+                    if (Objects.equals(DAY, course.getDay()) && Objects.equals(TIME, course.getTime())) {
+                        return Result.error(Constants.CODE_600, "当前时间内存在选课冲突！");
+                    }
                 }
             }
+
+
             TC tc = new TC();
             tc.setTeacher_id(teacher_id);
             tc.setCourse_id(course_id);
