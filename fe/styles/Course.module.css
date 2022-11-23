@@ -1,0 +1,11 @@
+.box {
+	border: 2px solid #000;
+	height: 120px;
+	width: 160px;
+	border-radius: 5%;
+	margin: 12px;
+	transition: all 0.2s ease-in-out;
+}
+.box:hover {
+	border: 2px solid #ff4b2b;
+}
