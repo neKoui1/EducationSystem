@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.backend.entity.TC;
 import com.example.backend.mapper.TCMapper;
@@ -16,5 +17,12 @@ public class TCService extends ServiceImpl<TCMapper, TC> {
     private TCMapper tcMapper;
     public List<Integer> findCourseIds(Integer id) {
         return tcMapper.findCourseIds(id);
+    }
+
+    public TC find(Integer teacher_id, Integer course_id) {
+        QueryWrapper<TC> wrapper = new QueryWrapper<>();
+        wrapper.eq("teacher_id", teacher_id);
+        wrapper.eq("course_id", course_id);
+        return getOne(wrapper);
     }
 }
