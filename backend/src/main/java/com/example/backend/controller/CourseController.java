@@ -93,13 +93,13 @@ public class CourseController {
         return Result.success(courseService.saveOrUpdate(course));
     }
 
-    @PostMapping("/cancel")
+    @PostMapping("/cancel/{id}")
     @ResponseBody
-    public Result cancel(@RequestBody Course course){
+    public Result cancel(@PathVariable Integer id){
         QueryWrapper<TC> wrapper = new QueryWrapper<>();
-        wrapper.eq("course_id", course.getId());
+        wrapper.eq("course_id", id);
         TC one = tcService.getOne(wrapper);
-        if ( one == null ){
+        if ( one == null ) {
             return Result.error(Constants.CODE_600, "当前课程未有老师执教！");
         } else {
             return Result.success(tcService.removeById(one));
