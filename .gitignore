@@ -1,3 +1,4 @@
 .idea/
+#next.js
 fe/.next/
 fe/node_modules/
