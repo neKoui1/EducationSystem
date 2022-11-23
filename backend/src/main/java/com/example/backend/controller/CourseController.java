@@ -60,7 +60,7 @@ public class CourseController {
 
             Integer teacher_id = tcMapper.findTeacherId(id);
             if (teacher_id == null){
-                list.get(i).setTaught(null);
+                list.get(i).setTaught("");
                 continue;
             } else{
                 list.get(i).setTaught(teacherService.getById(teacher_id).getName());
