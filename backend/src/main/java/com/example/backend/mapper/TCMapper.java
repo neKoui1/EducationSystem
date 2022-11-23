@@ -14,6 +14,6 @@ public interface TCMapper extends BaseMapper<TC> {
     @Select("select course_id from tc where teacher_id = #{id}")
     List<Integer> findCourseIds(Integer id);
 
-    @Select("select teacher_id from tc where course_id = #{id}")
+    @Select("select * from tc where course_id = #{id}")
     Integer findTeacherId(Integer id);
 }

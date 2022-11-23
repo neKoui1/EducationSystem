@@ -77,9 +77,11 @@ public class StudentController {
                 return Result.error(Constants.CODE_600, "当前课程选课人数已满！");
             }
             List<Course> courseList = courseService.findCourses(student_id);
-            for (Course course : courseList) {
-                if (Objects.equals(DAY, course.getDay()) && Objects.equals(TIME, course.getTime())) {
-                    return Result.error(Constants.CODE_600, "当前时间内存在选课冲突！");
+            if (courseList != null){
+                for (Course course : courseList) {
+                    if (Objects.equals(DAY, course.getDay()) && Objects.equals(TIME, course.getTime())) {
+                        return Result.error(Constants.CODE_600, "当前时间内存在选课冲突！");
+                    }
                 }
             }
             SC sc = new SC();
