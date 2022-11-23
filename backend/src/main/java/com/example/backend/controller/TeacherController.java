@@ -111,8 +111,23 @@ public class TeacherController {
 
     @PostMapping("/save")
     @ResponseBody
-    public boolean save(@RequestBody Teacher teacher){
-        return teacherService.saveOrUpdate(teacher);
+    public Result save(@RequestBody Teacher teacher){
+        String name = teacher.getName();
+        String password = teacher.getPassword();
+        String sex = teacher.getSex();
+        String age = teacher.getAge();
+        if (StrUtil.isBlank(name) || StrUtil.isBlank(password)){
+            return Result.error(Constants.CODE_400, "用户名或密码不能为空！");
+        }
+        if (!StrUtil.equals(sex, "男") && !StrUtil.equals(sex, "女")){
+            return Result.error(Constants.CODE_400, "请输入正确的性别！");
+        }
+        try {
+            Integer temp = Integer.parseInt(age);
+        } catch (Exception e){
+            return Result.error(Constants.CODE_400, "请输入正确的年龄！");
+        }
+        return Result.success(teacherService.saveOrUpdate(teacher));
     }
 
     @DeleteMapping("/del/{id}")
@@ -131,7 +146,10 @@ public class TeacherController {
     @ResponseBody
     public IPage<Teacher> findPage(@RequestParam Integer pageNum,
                                    @RequestParam Integer pageSize,
-                                   @RequestParam(required = false, defaultValue = "") String name){
+                                   @RequestParam(required = false, defaultValue = "") String name,
+                                   @RequestParam(required = false, defaultValue = "") String age,
+                                   @RequestParam(required = false, defaultValue = "") String sex,
+                                   @RequestParam(required = false, defaultValue = "") String dept){
         final String cmp = "";
 
         IPage<Teacher> page = new Page<>(pageNum, pageSize);
@@ -139,7 +157,16 @@ public class TeacherController {
         QueryWrapper<Teacher> wrapper = new QueryWrapper<>();
 
         if( !cmp.equals(name) ){
-            wrapper.like("name",name);
+            wrapper.like("name", name);
+        }
+        if( !cmp.equals(age) ){
+            wrapper.like("age", age);
+        }
+        if( !cmp.equals(sex) ){
+            wrapper.like("sex", sex);
+        }
+        if( !cmp.equals(dept) ){
+            wrapper.like("dept", dept);
         }
 
         return teacherService.page(page, wrapper);
