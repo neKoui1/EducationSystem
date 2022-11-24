@@ -25,7 +25,7 @@ const Courses = () => {
 	const [stu, setStu] = useState<Stu>({} as Stu);
 	const [url, setUrl] = useState<string>('');
 	useEffect(() => {
-		let stu = localStorage.getItem('stu');
+		let stu = localStorage.getItem('student');
 		if (stu) {
 			setStu(JSON.parse(stu));
 		} else {

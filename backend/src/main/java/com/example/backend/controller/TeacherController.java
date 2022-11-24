@@ -57,9 +57,9 @@ public class TeacherController {
 
     @GetMapping("/getCourses")
     @ResponseBody
-    public Result getCourses(@RequestBody Teacher teacher){
-        Integer id = teacher.getId();
-        List<Course>courseList = courseService.findTeacherCourses(id);
+    public Result getCourses(@RequestParam Integer teacher_id){
+
+        List<Course>courseList = courseService.findTeacherCourses(teacher_id);
         return Result.success(courseList);
     }
 

@@ -1,14 +1,16 @@
+import { Form, Radio } from '@arco-design/web-react';
 import Router from 'next/router';
 import { useState } from 'react';
-import { Radio } from '@arco-design/web-react';
-const RadioGroup = Radio.Group;
 import style from '../styles/Login.module.css';
+const RadioGroup = Radio.Group;
+const FormItem = Form.Item;
 const SignIn = () => {
 	const [id, setEmail] = useState('');
+	const [user, setUser] = useState('student');
 	const [password, setPassword] = useState('');
 	const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
-		fetch('/api/student/login', {
+		fetch(`/api/${user}/login`, {
 			method: 'POST',
 			body: JSON.stringify({ id, password }),
 			headers: {
@@ -20,8 +22,11 @@ const SignIn = () => {
 				if (data.code != 200) {
 					alert(data.msg);
 				} else {
-					localStorage.setItem('stu', JSON.stringify(data.data));
-					Router.push('/student/courses');
+					localStorage.setItem(user, JSON.stringify(data.data));
+					if (user != 'admin') Router.push(`/${user}/courses`);
+					else {
+						Router.push(`/${user}/course`);
+					}
 				}
 			});
 	};
@@ -30,20 +35,19 @@ const SignIn = () => {
 			<form action="#">
 				<h1>Sign in</h1>
 				<div className={style['social-container']}></div>
-				<span>or use your account</span>
 				<RadioGroup
-        type='button'
-        name='lang'
-        defaultValue='student'
-        style={{ marginRight: 20, marginBottom: 20 }}
-      >
-        <Radio value='student'>student</Radio>
-        <Radio value='teacher'>teacher</Radio>
-        <Radio  value='Guangzhou'>
-          Guangzhou
-        </Radio>
-        <Radio value='Shenzhen'>Shenzhen</Radio>
-      </RadioGroup>
+					onChange={(value) => {
+						setUser(value);
+					}}
+					type="button"
+					name="user"
+					defaultValue="student"
+					style={{ marginRight: 20, marginBottom: 20 }}
+				>
+					<Radio value="student">student</Radio>
+					<Radio value="teacher">teacher</Radio>
+					<Radio value="admin">admin</Radio>
+				</RadioGroup>
 				<input
 					type="text"
 					value={id}

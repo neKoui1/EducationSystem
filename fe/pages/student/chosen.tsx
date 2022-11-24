@@ -24,7 +24,7 @@ const handleChoose = (id: number, stuId: number) => {
 const Courses = () => {
 	const [stu, setStu] = useState<Stu>({} as Stu);
 	useEffect(() => {
-		let stu = localStorage.getItem('stu');
+		let stu = localStorage.getItem('student');
 		if (stu) {
 			setStu(JSON.parse(stu));
 		} else {
