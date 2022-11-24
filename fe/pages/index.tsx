@@ -22,6 +22,8 @@ const SignIn = () => {
 				if (data.code != 200) {
 					alert(data.msg);
 				} else {
+					localStorage.removeItem('student');
+					localStorage.removeItem('teacher');
 					localStorage.setItem(user, JSON.stringify(data.data));
 					if (user != 'admin') Router.push(`/${user}/courses`);
 					else {

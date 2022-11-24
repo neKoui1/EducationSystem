@@ -9,6 +9,7 @@ export interface Student {
 }
 export interface Course {
 	id: number;
+	day: string;
 	name: string;
 	credit: number;
 	taught: string | null;

@@ -1,33 +1,29 @@
 import { Grid } from '@arco-design/web-react';
-import Side from '../components/Side';
-import style from '../styles/Course.module.css';
+import Router from 'next/router';
+import { useEffect, useState } from 'react';
+import useSWR from 'swr';
+import Side from '../../components/StuSide';
+import style from '../../styles/Course.module.css';
+import { Course, Student } from '../../type';
 const Row = Grid.Row;
 const Col = Grid.Col;
-const data = [
-	{
-		id: 1,
-		name: 'web框架编程',
-		credit: 5,
-		day: '周一',
-		time: '3',
-		location: '南401',
-		choose: 2,
-		capacity: 120,
-		taught: 'Lily',
-	},
-	{
-		id: 3,
-		name: '数据库系统',
-		credit: 4,
-		day: '周二',
-		time: '3',
-		location: null,
-		choose: 1,
-		capacity: 60,
-		taught: 'Lily',
-	},
-];
+interface Props {
+	data: Course[];
+}
 const App = () => {
+	const [tea, setTea] = useState<Student | null>(null);
+	useEffect(() => {
+		const user = localStorage.getItem('teacher');
+		if (user) {
+			setTea(JSON.parse(user));
+		} else {
+			Router.push('/');
+		}
+	}, []);
+	const { data } = useSWR<Props>(
+		`/api/teacher/getCourses?teacher_id=${tea?.id}`,
+		(url) => fetch(url).then((r) => r.json())
+	);
 	return (
 		<Side>
 			{['1', '2', '3', '4', '5'].map((item, index) => {
@@ -36,7 +32,7 @@ const App = () => {
 						{['周一', '周二', '周三', '周四', '周五', '周六', '周日'].map(
 							(day) => (
 								<Col key={day} span={3} className={style.box}>
-									{data.map((course) => {
+									{data?.data?.map((course) => {
 										if (course.day == day && course.time == item) {
 											return (
 												<>
