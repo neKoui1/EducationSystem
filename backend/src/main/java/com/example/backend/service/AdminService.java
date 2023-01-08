@@ -17,7 +17,6 @@ public class AdminService extends ServiceImpl<AdminMapper, Admin> {
         wrapper.eq("password", admin.getPassword());
         return getOne(wrapper);
     }
-
     public Admin login(Admin admin) {
         Admin one = getInfo(admin);
         if (one != null){
